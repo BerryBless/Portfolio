@@ -2,7 +2,7 @@
 #include <Windows.h>		// MultiByteToWideChar()
 #include <stringapiset.h>	// MultiByteToWideChar()
 #include <locale.h>
-#define CRASH() int *p = nullptr; *p++
+#define CRASH() do{int* p=nullptr; *p=0; }while(0)
 
 #pragma region StringFunc
 
