@@ -109,10 +109,10 @@ CParser::CParser(const WCHAR *FILEPATH) {
 			// ']' 문자까지 && '[' 문자를 한번이라도 만났으면
 			// 리스트에 저장하기
 			stNamespaceInfo info;
-			info._start = _start;
-			info._end = MAXINT32;
+			info.Start = _start;
+			info.End = MAXINT32;
 			nameLen = index - _start;
-			Strcpy(info._name, (_buffer + _start), nameLen);
+			Strcpy(info.Name, (_buffer + _start), nameLen);
 			_namespaceList.push_back(info);
 			// 짝이되는 대괄호를 만났으니.. 초기화
 			_start = -1;
@@ -209,11 +209,11 @@ bool CParser::SetNamespace(const WCHAR *nspace) {
 	// 네임스페이스 찾기
 
 	for (auto iter = _namespaceList.begin(); iter != _namespaceList.end(); ++iter) {
-		if (Strcmp(nspace, (*iter)._name) != 0)
+		if (Strcmp(nspace, (*iter).Name) != 0)
 			continue;
 
-		_start = (*iter)._start;
-		_end = min((*iter)._end, _filesize);
+		_start = (*iter).Start;
+		_end = min((*iter).End, _filesize);
 		return true;
 	}
 	return false;

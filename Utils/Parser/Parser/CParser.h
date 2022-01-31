@@ -37,12 +37,12 @@ int Strcmp(const WCHAR* str1, const WCHAR* str2, const int len);
 class CParser
 {
 private:
-	// 네임스페이스 리스트 클래스
+	// 네임스페이스 리스트 구조체
 	struct stNamespaceInfo
 	{
-		WCHAR _name[32];		// 네임스페이스 이름
-		int _start;			// 네임스페이스 시작 인덱스
-		int _end;			// 네임스페이스 끝 인덱스
+		WCHAR Name[32];		// 네임스페이스 이름
+		int Start;			// 네임스페이스 시작 인덱스
+		int End;			// 네임스페이스 끝 인덱스
 	};
 
 public:
