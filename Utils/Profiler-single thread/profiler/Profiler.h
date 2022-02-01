@@ -81,7 +81,8 @@ struct PROFILE_SAMPLE {
 
 void ProfileBegin(const WCHAR* name);
 void ProfileEnd(const WCHAR* name);
-void ProfileDataOutText(WCHAR* fileName);
+void ProfileDataOutText(char* fileName);
+void WProfileDataOutText(WCHAR* fileName);
 void ProfileReset(void);
 //* 생성자, 소멸자를 이용해서 자동으로 끝냄 (느림)
 class cProfiler {

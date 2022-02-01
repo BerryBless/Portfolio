@@ -23,7 +23,7 @@ int main() {
 		f3();
 		if (_kbhit()) {
 			char key = _getch();
-			PRO_PRINT((WCHAR*)L"log.log");
+			PRO_PRINT((char*)"log.log");
 		}
 	}
 
