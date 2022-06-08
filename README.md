@@ -16,10 +16,11 @@ Pathfinding Algorithm|각 알고리즘의 탐색과정을 시각화하여 보여
 TCPFighrer_serve|싱글코어로 스크롤 가능한 2d게임 서버
 TCPFighter_clien|싱글코어로 스크롤 가능한 2d게임 클라이언트
 TextGame_OOP|내 마음데로 만들어본 콘솔 txt게임
-Utils|
-       |MemoryProfiler|메모리 누수 체크|
-        |Parser|나만의 .ini파일을 파싱할수있는 클레스|
-        |Profiler|싱글스레드에서만 작동하는 프로파일러|
+Utils| 항목 1 | 항목 2 
+       ----- | -----
+       MemoryProfiler|메모리 누수 체크
+       Parser|나만의 .ini파일을 파싱할수있는 클레스
+       Profiler|싱글스레드에서만 작동하는 프로파일러
 
 
 # Multi Thread
