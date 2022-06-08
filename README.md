@@ -8,6 +8,7 @@
 
 # Single Thread
     |Title|내용|
+    |-----|----|
     |Chat_Server|이미 만들어진 클라이언트와 프로토콜을 맞춘 체팅방있는 체팅서버|
     |MonitorGraphUnit|외부에서 값을 받아 꺾은선 그래프로 표현하는 모니터링 가능한 유닛|
     |Pathfinding Algorithm|각 알고리즘의 탐색과정을 시각화하여 보여주는 프로그렘|
