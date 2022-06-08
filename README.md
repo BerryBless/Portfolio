@@ -1,10 +1,11 @@
 # Portfolio
 
 [상세 설명 문서](https://bit.ly/3xhkt98)
+이메일 : shsuzakfn@gmail.com
 
 # Multi Thread
 
-    Utils
+    - Utils
         - CLogger                     서버 로깅을위한 로거
         - LF_ObjectPool               락프리 오브젝트 풀
         - LFQueue                     락프리 큐
