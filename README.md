@@ -1,19 +1,21 @@
 # Portfolio
-MonitorGraphUnit
-    윈도우 API로 X축은 시간 Y축은 받은 데이터인 꺾은선 그래프
-    어느 그래프든 따로 윈도우API로 그릴 수 있다면 추가 가능하게 분리해 놓음.
 
-TextGame_OOP
-    윈도우 콘솔창에서 밑바닥부터 하나하나 쌓아올린 간단한 게임.
-    좌표에 출력하는 API는 내가 만든것이 아님.
-    그외는 전부 내가 만든것.
+Multi Thread
 
-Utils/
-MemoryProfiler - single thread
-    MemProfiler.h를 선언하면 그 파일의 new / delete의 짝이 맞는지 확인합니다.
-
-Parser
-    UTF-8 포멧으로 저장된 파일을 읽어 미리 설정된 값을 추출해냅니다.
-
-Profiler-single thread
-    싱글스레드에서 특정 구간(Begin~End)을 프로파일링 합니다.
+    Utils
+        CLogger                     서버 로깅을위한 로거
+        LF_ObjectPool               락프리 오브젝트 풀
+        LFQueue                     락프리 큐
+        LFStack                     락프리 스택
+        profiler                    TLS를 이용한 멀티스레딩 프로파일러
+        Ringbuffer                  멀티스레드에도 이용가능한 링버퍼
+Single Thread
+    Chat_Server                     이미 만들어진 클라이언트와 프로토콜을 맞춘 체팅방있는 체팅서버
+    MonitorGraphUnit                외부에서 값을 받아 꺾은선 그래프로 표현하는 모니터링 가능한 유닛
+    TCPFighrer_server               
+    TCPFighter_client               
+    TextGame_OOP                    내 마음데로 만들어본 콘솔 txt게임
+    Utils
+        MemoryProfiler              메모리 누수 체크
+        Parser                      나만의 .ini파일을 파싱할수있는 클레스
+        Profiler                    싱글스레드에서만 작동하는 프로파일러
