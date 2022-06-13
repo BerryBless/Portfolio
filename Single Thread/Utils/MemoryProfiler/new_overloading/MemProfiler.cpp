@@ -1,4 +1,4 @@
-#include "MemProfiler.h"
+ï»¿#include "MemProfiler.h"
 #include <iostream>
 #include <cstring>
 #include <ctime>
@@ -6,7 +6,7 @@
 
 #pragma region MemProfiler
 
-// ½Ì±ÛÅæ
+// ì‹±ê¸€í†¤
 
 MemProfiler& MemProfiler::Instance() {
 	static MemProfiler instance;
@@ -14,22 +14,22 @@ MemProfiler& MemProfiler::Instance() {
 }
 
 MemProfiler::MemProfiler() {
-	// ½Ì±ÛÅæ »ı¼ºÀÚ
+	// ì‹±ê¸€í†¤ ìƒì„±ì
 }
 MemProfiler::~MemProfiler() {
-	// ½Ì±ÛÅæ ¼Ò¸êÀÚ
+	// ì‹±ê¸€í†¤ ì†Œë©¸ì
 	this->_list.PrintInfo();
 }
-// ¾ó·Ï Á¤º¸ ³Ö±â!
+// ì–¼ë¡ ì •ë³´ ë„£ê¸°!
 void MemProfiler::AllocInfo(void* aPtr, size_t size, const char* file, int line) {
-	MemAllocInfo info;	// MemAllocInfo ±¸Á¶Ã¼
-	// ±¸Á¶Ã¼¿¡ Á¤º¸ ³Ö±â
+	MemAllocInfo info;	// MemAllocInfo êµ¬ì¡°ì²´
+	// êµ¬ì¡°ì²´ì— ì •ë³´ ë„£ê¸°
 	info.AllocPtr = aPtr;
 	info.Size = size;
 	strcpy_s(info.File, strlen(file) + 1, file);
 	info.Line = line;
 	info.State = AllocState::Alloc;
-	// ±¸Á¶Ã¼¸¦ ¸®½ºÆ®¿¡ ´Ş±â
+	// êµ¬ì¡°ì²´ë¥¼ ë¦¬ìŠ¤íŠ¸ì— ë‹¬ê¸°
 	_list.Push_back(info);
 }
 
@@ -37,22 +37,22 @@ void MemProfiler::AllocInfo(void* aPtr, size_t size, const char* file, int line)
 
 
 MemProfiler::InfoList::InfoList() {
-	// ¸®½ºÆ® ÃÊ±âÈ­
+	// ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
 	_head = nullptr;
 	_count = 0;
 }
 void MemProfiler::InfoList::Push_back(MemAllocInfo info) {
-	// ¸®½ºÆ® ³¡¿¡ Ãß°¡ÇÏ±â
-	Node* newNode = new Node;	// »õ ³ëµå ÇÒ´ç
-	// »õ ³ëµå¿¡ Á¤º¸³Ö±â
-	newNode->Info = info;		
+	// ë¦¬ìŠ¤íŠ¸ ëì— ì¶”ê°€í•˜ê¸°
+	Node* newNode = new Node;	// ìƒˆ ë…¸ë“œ í• ë‹¹
+	// ìƒˆ ë…¸ë“œì— ì •ë³´ë„£ê¸°
+	newNode->Info = info;
 	newNode->Tail = nullptr;
-	// Ã³À½ºÎÅÍ¸é
+	// ì²˜ìŒë¶€í„°ë©´
 	if (_head == nullptr) {
 		_head = newNode;
 	}
 	else {
-		// ²¿¸®¿¡ ´Ş±â
+		// ê¼¬ë¦¬ì— ë‹¬ê¸°
 		Node* cur = _head;
 		while (cur->Tail != nullptr) {
 			cur = cur->Tail;
@@ -64,57 +64,57 @@ void MemProfiler::InfoList::Push_back(MemAllocInfo info) {
 
 MemProfiler::AllocState MemProfiler::InfoList::TryDelete(void* ptr) {
 	if (_head == nullptr) { printf_s("\nMemProfiler::InfoList::TryDelete :: Head == nullptr\n"); return AllocState::ERROR; }
-	// ³¡±îÁö ¼øÈ¸ÇÏ¸ç
+	// ëê¹Œì§€ ìˆœíšŒí•˜ë©°
 	Node* itr = _head;
 	while (itr != nullptr) {
-		// ¿À·ù ³»¿ë¿¡ ¸Â°Ô Ã³¸®
+		// ì˜¤ë¥˜ ë‚´ìš©ì— ë§ê²Œ ì²˜ë¦¬
 		if (itr->Info.AllocPtr == ptr) {
 			if (itr->Info.State == AllocState::Free) {
-				// ÀÌ¹Ì ÃÊ±âÈ­µÈ°É ´Ù½Ã ÃÊ½ÃÈ­ ½ÃµµÇÒ¶§ ¿¡·¯
-				// TODO deleteÇÑ ÆÄÀÏ°ú ¶óÀÎ °¡Á®¿À±â
+				// ì´ë¯¸ ì´ˆê¸°í™”ëœê±¸ ë‹¤ì‹œ ì´ˆì‹œí™” ì‹œë„í• ë•Œ ì—ëŸ¬
+				// TODO deleteí•œ íŒŒì¼ê³¼ ë¼ì¸ ê°€ì ¸ì˜¤ê¸°
 				itr->Info.State = AllocState::Freed;
 				return AllocState::Freed;
 			}
-			// Á¤»óÀûÀ¸·Î µé¾î¿È
+			// ì •ìƒì ìœ¼ë¡œ ë“¤ì–´ì˜´
 			itr->Info.State = AllocState::Free;
 			return AllocState::Free;
 		}
 		else if (itr->Info.AllocPtr == (int*)ptr - 1) {
-			// new[] ·Î È£ÃâÇÏ°í delete ·Î Áö¿ï¶§
+			// new[] ë¡œ í˜¸ì¶œí•˜ê³  delete ë¡œ ì§€ìš¸ë•Œ
 			itr->Info.State = AllocState::Array;
 			return AllocState::Array;
 		}
 		else if (itr->Info.AllocPtr == (int*)ptr + 1) {
-			// new ·Î È£ÃâÇÏ°í delete[] ·Î Áö¿ï¶§
+			// new ë¡œ í˜¸ì¶œí•˜ê³  delete[] ë¡œ ì§€ìš¸ë•Œ
 			itr->Info.State = AllocState::nArray;
 			return AllocState::nArray;
 		}
 		itr = itr->Tail;
 	}
-	// ¾ÖÃÊ¿¡ ÀÌ»óÇÑ°Å µé¾î¿È
+	// ì• ì´ˆì— ì´ìƒí•œê±° ë“¤ì–´ì˜´
 	return AllocState::ERROR;
 }
-// ¾ó·ÏÁ¤º¸ Ãâ·Â
+// ì–¼ë¡ì •ë³´ ì¶œë ¥
 void MemProfiler::InfoList::PrintInfo() {
 	if (_head == nullptr) { printf_s("\MemProfiler::InfoList::PrintInfo :: Head == nullptr\n"); return; }
 
 	FILE* fp = stdout;
-	//* ÆÄÀÏ ÀÔÃâ·Â
+	//* íŒŒì¼ ì…ì¶œë ¥
 	// Alloc_YYYYMMDD_HHMMSS.log
-	char filename[26];	// ÀúÀåÇÒÆÄÀÏ ÀÌ¸§
+	char filename[26];	// ì €ì¥í• íŒŒì¼ ì´ë¦„
 
-	// ½Ã°£±¸ÇÏ±â
+	// ì‹œê°„êµ¬í•˜ê¸°
 	time_t now = time(0);
 	struct tm tstruct;
 
 	localtime_s(&tstruct, &now);
 	strftime(filename, sizeof(filename), "Alloc_%Y%m%e_%H%M%S.log", &tstruct); // (Alloc_20210828_173840.log)
 
-	// ÆÄÀÏÀÌ ÀÖÀ¸¸é µÚ¿¡ Ãß°¡
+	// íŒŒì¼ì´ ìˆìœ¼ë©´ ë’¤ì— ì¶”ê°€
 	fopen_s(&fp, filename, "a");
 	if (fp == NULL) {
 		//CRASH
-		int *p = nullptr;
+		int* p = nullptr;
 		*p = 10;
 		return;
 	}
@@ -124,20 +124,20 @@ void MemProfiler::InfoList::PrintInfo() {
 	while (itr != nullptr) {
 		switch (itr->Info.State)
 		{
-		case AllocState::Alloc:		// delete È£ÃâÇÏÁö ¾ÊÀ½!
+		case AllocState::Alloc:		// delete í˜¸ì¶œí•˜ì§€ ì•ŠìŒ!
 			fprintf_s(fp, "LEAK    [0x%p] [%6Iu] %s : %d\n", itr->Info.AllocPtr, itr->Info.Size, itr->Info.File, itr->Info.Line);
 			break;
-		case AllocState::Free:		// Á¤»óÀÛµ¿!
+		case AllocState::Free:		// ì •ìƒì‘ë™!
 			fprintf_s(fp, "NOALLOC [0x%p]\n", itr->Info.AllocPtr);
 			break;
-		case AllocState::Freed:		// delete 2¹øÀÌ»ó È£Ãâ!
-			// TODO ¿¡·¯¸Ş½ÃÁö
+		case AllocState::Freed:		// delete 2ë²ˆì´ìƒ í˜¸ì¶œ!
+			// TODO ì—ëŸ¬ë©”ì‹œì§€
 			fprintf_s(fp, "Freed   [0x%p] [%6Iu] %s : %d\n", itr->Info.AllocPtr, itr->Info.Size, itr->Info.File, itr->Info.Line);
 			break;
-		case AllocState::Array:		// new[] ·Î È£ÃâÇÏ°í delete ·Î Áö¿ï¶§
+		case AllocState::Array:		// new[] ë¡œ í˜¸ì¶œí•˜ê³  delete ë¡œ ì§€ìš¸ë•Œ
 			fprintf_s(fp, "ARRAY   [0x%p] [%6Iu] %s : %d\n", itr->Info.AllocPtr, itr->Info.Size, itr->Info.File, itr->Info.Line);
 			break;
-		case AllocState::nArray:	// new ·Î È£ÃâÇÏ°í delete[] ·Î Áö¿ï¶§
+		case AllocState::nArray:	// new ë¡œ í˜¸ì¶œí•˜ê³  delete[] ë¡œ ì§€ìš¸ë•Œ
 			fprintf_s(fp, "nArray  [0x%p] [%6Iu] %s : %d\n", itr->Info.AllocPtr, itr->Info.Size, itr->Info.File, itr->Info.Line);
 			break;
 
@@ -149,11 +149,11 @@ void MemProfiler::InfoList::PrintInfo() {
 	fclose(fp);
 }
 #pragma endregion
-// ¾ó·ÏÁ¤º¸ »©±â
+// ì–¼ë¡ì •ë³´ ë¹¼ê¸°
 void MemProfiler::FreeInfo(void* aPtr) {
 	AllocState state = _list.TryDelete(aPtr);
 	if (state != AllocState::Free) {
-		// TODO  ¿À·ù¼öÁ¤
+		// TODO  ì˜¤ë¥˜ìˆ˜ì • ë¶€ë¶„ ë„£ê¸°
 		Instance()._list.PrintInfo();
 	}
 }
@@ -164,9 +164,9 @@ void MemProfiler::FreeInfo(void* aPtr) {
 
 #pragma region new overloading
 
-// µ¿ÀûÇÒ´ç
+// ë™ì í• ë‹¹
 
-// const ¾ÈºÙÀÌ¸é ¿¡·¯ (2019)
+// const ì•ˆë¶™ì´ë©´ ì—ëŸ¬ (2019)
 void* operator new (size_t size, const char* file, int line) {
 	void* p = malloc(size);
 
@@ -181,7 +181,7 @@ void operator delete (void* p) {
 }
 
 
-// ¹è¿­·Î ÇÒ´ç
+// ë°°ì—´ë¡œ í• ë‹¹
 void* operator new[](size_t size, const char* file, int line) {
 	void* p = malloc(size);
 	MemProfiler::Instance().AllocInfo(p, size, file, line);
