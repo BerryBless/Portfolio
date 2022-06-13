@@ -1,35 +1,26 @@
 ﻿#include <iostream>
-#define PROFILER
-#ifdef PROFILER
 #include "MemProfiler.h"
-#endif // DEBUG
 
 class CTest {
 private:
-	int arr[50];
+	int arr[4];
 public:
 	CTest() {
 		printf_s("Constructor\n");
-		for (int i = 0; i < 50; i++) {
-			arr[i] = i;
+		for (int i = 0; i < 4; i++) {
+			arr[i] = 0x1234578;
 		}
 	}
-	~CTest() {
+	/*~CTest() {
 		printf_s("Destructor\n");
-		for (int i = 0; i < 50; i++) {
-			arr[i] = 0;
+		for (int i = 0; i < 4; i++) {
+			arr[i] = 0xaaaabbbb;
 		}
-	}
+	}*/
 };
 
 int main() {
-	CTest* test = new CTest[5];
-	CTest* test2 = new CTest[5];
-	CTest* test3 = new CTest[5];
-	CTest* test4 = new CTest[5];
-	CTest* test5 = new CTest[5];
-	CTest* test1 = new CTest;
-	delete[] test;
-	delete test1;
+	CTest* test = new CTest[3];
+	delete test;
 	return 0;
 }
