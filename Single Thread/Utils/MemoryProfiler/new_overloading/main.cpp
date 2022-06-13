@@ -1,21 +1,21 @@
-#include <iostream>
+ï»¿#include <iostream>
 #define PROFILER
 #ifdef PROFILER
 #include "MemProfiler.h"
 #endif // DEBUG
 
 class CTest {
-private: 
+private:
 	int arr[50];
 public:
 	CTest() {
-		printf_s("»ý ¼º ÀÚ\n");
+		printf_s("Constructor\n");
 		for (int i = 0; i < 50; i++) {
 			arr[i] = i;
 		}
 	}
 	~CTest() {
-		printf_s("¼Ò ¸ê ÀÚ\n");
+		printf_s("Destructor\n");
 		for (int i = 0; i < 50; i++) {
 			arr[i] = 0;
 		}

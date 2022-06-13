@@ -355,7 +355,7 @@ bool CParser::TryGetValue(const WCHAR* key, float& value) {
 			iPart *= 10;
 			iPart += (buffer - L'0');
 		}
-		// 데이터의 시작이 숫자가 아니거나 숫자가 끝나면 리턴
+		// 데이터의 시작이 숫자가 아니거나 숫자가 끝나면 나오기
 		else {
 			break;
 		}
@@ -374,7 +374,7 @@ bool CParser::TryGetValue(const WCHAR* key, float& value) {
 				num *= 10;
 				num += (buffer - L'0');
 			}
-			// 데이터의 시작이 숫자가 아니거나 숫자가 끝나면 리턴
+			// 데이터의 시작이 숫자가 아니거나 숫자가 끝나면 나오기
 			else {
 				break;
 			}
