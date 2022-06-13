@@ -1,7 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include <string>
-#include <list>
+#include "CList.h"
 typedef wchar_t WCHAR;
 #pragma region StringFunc
 
@@ -34,12 +34,10 @@ int Strcmp(const WCHAR* str1, const WCHAR* str2, const int len);
 // 네임스페이스와 변수의 이름은 알파벳, '_', '.', ','  만 포함가능
 // value값이 문자열일때 ""안의 값은 멀티바이트 캐릭터셋
 // =========================================================================
-class CParser
-{
+class CParser {
 private:
-	// 네임스페이스 리스트 구조체
-	struct stNamespaceInfo
-	{
+	// 네임스페이스 리스트 클래스
+	struct stNamespaceInfo {
 		WCHAR Name[32];		// 네임스페이스 이름
 		int Start;			// 네임스페이스 시작 인덱스
 		int End;			// 네임스페이스 끝 인덱스
@@ -52,9 +50,9 @@ public:
 private:
 	WCHAR* _buffer;	// 파일 내용물 (UTF-8을 유니코드로 변환해서 저장)
 	int _filesize;	// 파일크기
-	std::list<stNamespaceInfo> _namespaceList; // 네임스페이스 인덱스 리스트
-	int _start;		// 인덱스 시작
-	int _end;			// 인덱스 끝
+	CList<stNamespaceInfo> _namespaceList; // 네임스페이스 인덱스 리스트
+	int _Start;		// 인덱스 시작
+	int _End;			// 인덱스 끝
 
 private:
 	bool Skip(int& index);				// key 또는 value 시작지점 찾기
@@ -74,7 +72,7 @@ public: // getvalue
 	bool TryGetValue(const WCHAR* key, bool& value);			// bool 파싱
 	bool TryGetValue(const WCHAR* key, int& value);				// int 파싱
 	bool TryGetValue(const WCHAR* key, float& value);			// float 파싱
-	bool TryGetValue(const WCHAR* key, WCHAR* value );			// string (wchar)파싱
+	bool TryGetValue(const WCHAR* key, WCHAR* value);			// string (wchar)파싱
 
 
 };

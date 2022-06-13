@@ -1,19 +1,19 @@
 #include "CParser.h"
-#include <Windows.h>		// MultiByteToWideChar()
+#include <Windows.h>
 #include <stringapiset.h>	// MultiByteToWideChar()
 #include <locale.h>
-#define CRASH() do{int* p=nullptr; *p=0; }while(0)
+#define CRASH() int *p = nullptr; *p++
 
 #pragma region StringFunc
 
-int Strlen(const WCHAR *str) {
+int Strlen(const WCHAR* str) {
 	int len = 0;
 	while (*(str + len) != '\0') {
 		len++;
 	}
 	return len;
 }
-void Strcpy(WCHAR *strDest, const WCHAR *strSrc) {
+void Strcpy(WCHAR* strDest, const WCHAR* strSrc) {
 	int len = 0;
 	while (*(strSrc + len) != '\0') {
 		*(strDest + len) = *(strSrc + len);
@@ -21,13 +21,13 @@ void Strcpy(WCHAR *strDest, const WCHAR *strSrc) {
 	}
 	*(strDest + len) = '\0';
 }
-void Strcpy(WCHAR *strDest, const WCHAR *strSrc, const int len) {
+void Strcpy(WCHAR* strDest, const WCHAR* strSrc, const int len) {
 	for (int i = 0; i < len; i++) {
 		*(strDest + i) = *(strSrc + i);
 	}
 	*(strDest + len) = '\0';
 }
-int Strcmp(const WCHAR *str1, const WCHAR *str2) {
+int Strcmp(const WCHAR* str1, const WCHAR* str2) {
 	int len = Strlen(str1);
 	for (int i = 0; i < len; i++) {
 		if (*(str1 + i) != *(str2 + i))
@@ -35,7 +35,7 @@ int Strcmp(const WCHAR *str1, const WCHAR *str2) {
 	}
 	return *(str1 + len) - *(str2 + len);
 }
-int Strcmp(const WCHAR *str1, const WCHAR *str2, const int len) {
+int Strcmp(const WCHAR* str1, const WCHAR* str2, const int len) {
 	for (int i = 0; i < len; i++) {
 		if (*(str1 + i) != *(str2 + i))
 			return *(str1 + i) - *(str2 + i);
@@ -49,16 +49,16 @@ int Strcmp(const WCHAR *str1, const WCHAR *str2, const int len) {
 #pragma region CParser
 
 
-CParser::CParser(const WCHAR *FILEPATH) {
+CParser::CParser(const WCHAR* FILEPATH) {
 	// ================================================================
 	// 	   파일입력
 	// ----------------------------------------------------------------
 	// 1. '[' 문자를 만나면 ']' 문자를 만날때까지 저장 (네임스페이스 이름)
-	// 2. _start는 ']' 문자 위치
+	// 2. start는 ']' 문자 위치
 	// 3. _namespaceList에 저장
 	// ================================================================
-	FILE *fp = NULL;	// 파일포인터
-	char *buffer;		// UTF-8이 저장될 버퍼
+	FILE* fp = NULL;	// 파일포인터
+	char* buffer;		// UTF-8이 저장될 버퍼
 
 	_wfopen_s(&fp, FILEPATH, L"r");	// 멀티바이트로 읽기
 	if (fp == NULL) {
@@ -80,9 +80,10 @@ CParser::CParser(const WCHAR *FILEPATH) {
 	fclose(fp);
 
 
-	// UTF-8 -> 멀티바이트로 변환
+	// UTF-8 -> UNICODE 변환
+	// https://docs.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar
 	_buffer = new WCHAR[_filesize];
-	if (MultiByteToWideChar(CP_UTF8, 0, (LPCCH)buffer, sizeof(BYTE) * _filesize, _buffer, sizeof(WCHAR) * _filesize) == NULL) {
+	if (MultiByteToWideChar(CP_UTF8, 0, buffer, sizeof(BYTE) * _filesize, _buffer, sizeof(WCHAR) * _filesize) == NULL) {
 		// utf-8을 멀티바이트로 변경못함
 		CRASH();
 	}
@@ -94,34 +95,40 @@ CParser::CParser(const WCHAR *FILEPATH) {
 	// 	   네임스페이스 지정
 	// ----------------------------------------------------------------
 	// 1. '[' 문자를 만나면 ']' 문자를 만날때까지 저장 (네임스페이스 이름)
-	// 2. _start는 ']' 문자 위치
+	// 2. start는 ']' 문자 위치
 	// 3. _namespaceList에 저장
 	// 딱 여기서만 호출되야 하기때문에 따로 메소드를 파지않음.
 	// ================================================================
-	_start = -1;
+	WCHAR nameBuffer[32];
+	int start = -1;
 	int nameLen;
 	for (int index = 0; index < _filesize; index++) {
 		if (*(_buffer + index) == L'[') {
 			// '[' 다음문자부터
-			_start = index + 1;
+			start = index + 1;
 		}
-		if (*(_buffer + index) == L']' && _start >= 0) {
+		if (*(_buffer + index) == L']' && start >= 0) {
 			// ']' 문자까지 && '[' 문자를 한번이라도 만났으면
 			// 리스트에 저장하기
 			stNamespaceInfo info;
-			info.Start = _start;
+			info.Start = start;
 			info.End = MAXINT32;
-			nameLen = index - _start;
-			Strcpy(info.Name, (_buffer + _start), nameLen);
+			nameLen = index - start;
+			Strcpy(info.Name, (_buffer + start), nameLen);
 			_namespaceList.push_back(info);
 			// 짝이되는 대괄호를 만났으니.. 초기화
-			_start = -1;
+			start = -1;
 		}
 	}
-
+	// 네임스페이스의 end값 넣기
+	auto nextiter = _namespaceList.begin();
+	++nextiter;
+	for (auto nowiter = _namespaceList.begin(); nextiter != _namespaceList.end(); ++nowiter, ++nextiter) {
+		(*nowiter).End = (*nextiter).Start;
+	}
 	// index 초기값
-	_start = 0;
-	_end = _filesize;
+	_Start = 0;
+	_End = _filesize;
 }
 CParser::~CParser() {
 	delete _buffer;
@@ -133,10 +140,10 @@ CParser::~CParser() {
 // -----------------------------------
 // *(_buffer + index)가 파싱 가능한 문자가 나올때까지 스킵
 // ===================================
-bool CParser::Skip(int &index) {
+bool CParser::Skip(int& index) {
 	WCHAR buffer;
 	while (true) {
-		if (index >= _end) {
+		if (index >= _End) {
 			// 탐색범위를 벗어남
 			return false;
 		}
@@ -159,10 +166,10 @@ bool CParser::Skip(int &index) {
 // -----------------------------------
 // *(_buffer + index)가 ch 문자가 나올때까지 index++
 // ===================================
-bool CParser::Skip(int &index, WCHAR ch) {
+bool CParser::Skip(int& index, WCHAR ch) {
 	WCHAR buffer;
 	while (true) {
-		if (index >= _end) {
+		if (index >= _End) {
 			// 탐색범위를 벗어남
 			return false;
 		}
@@ -183,10 +190,10 @@ bool CParser::Skip(int &index, WCHAR ch) {
 // -----------------------------------
 // index부터 key값이 나올때까지 순회
 // ===================================
-bool CParser::TryGetKey(const WCHAR *key, int &index) {
-	index = _start; // 네임스페이스 시작부터
+bool CParser::TryGetKey(const WCHAR* key, int& index) {
+	index = _Start; // 네임스페이스 시작부터
 	int keylen = Strlen(key) - 1;
-	while (index < _end) {
+	while (index < _End) {
 		this->Skip(index, *key);
 		if (Strcmp(key, _buffer + index, keylen) == 0) {
 			this->Skip(index, L'=');	// = 다음으로 넘기기
@@ -205,15 +212,15 @@ bool CParser::TryGetKey(const WCHAR *key, int &index) {
 // -----------------------------------
 // 네임스페이스 nspace 를 _namespaceList에서 찾아 노드값을 반환
 // ===================================
-bool CParser::SetNamespace(const WCHAR *nspace) {
+bool CParser::SetNamespace(const WCHAR* nspace) {
 	// 네임스페이스 찾기
 
 	for (auto iter = _namespaceList.begin(); iter != _namespaceList.end(); ++iter) {
 		if (Strcmp(nspace, (*iter).Name) != 0)
 			continue;
 
-		_start = (*iter).Start;
-		_end = min((*iter).End, _filesize);
+		_Start = (*iter).Start;
+		_End = min((*iter).End, _filesize);
 		return true;
 	}
 	return false;
@@ -229,8 +236,8 @@ bool CParser::SetNamespace(const WCHAR *nspace) {
 //  4-2. 1, 't', 'T' 중 하나면 true
 // 5. 값을 value에 넣고 성공했다고 true를 리턴하기
 // ===================================
-bool CParser::TryGetValue(const WCHAR *key, bool &value) {
-	int index = this->_start;		// 네임스페이스 시작
+bool CParser::TryGetValue(const WCHAR* key, bool& value) {
+	int index = this->_Start;		// 네임스페이스 시작
 
 	// key 찾기
 	if (TryGetKey(key, index) == false) {
@@ -247,10 +254,12 @@ bool CParser::TryGetValue(const WCHAR *key, bool &value) {
 	if (buffer == L'0' || buffer == L'f' || buffer == L'F') {
 		// 0 || false || FALSE
 		bValue = false;
-	} else if (buffer == L'1' || buffer == L't' || buffer == L'T') {
+	}
+	else if (buffer == L'1' || buffer == L't' || buffer == L'T') {
 		// 1 || true || TRUE
 		bValue = true;
-	} else {
+	}
+	else {
 		return false;
 	}
 	value = bValue;
@@ -272,7 +281,7 @@ bool CParser::TryGetValue(const WCHAR *key, bool &value) {
 //  5-1-2. 아니면 끝내기
 // 6. 값을 value에 넣고 성공했다고 true를 리턴하기
 // ===================================
-bool CParser::TryGetValue(const WCHAR *key, int &value) {
+bool CParser::TryGetValue(const WCHAR* key, int& value) {
 	int index;		// 네임스페이스 시작
 
 	// key 찾기
@@ -284,7 +293,7 @@ bool CParser::TryGetValue(const WCHAR *key, int &value) {
 	// value 파싱
 	int iValue = 0;		// 파싱될 정수
 	WCHAR buffer;// 현재 index가 가르키는 값을 저장할 임시변수
-	while (index < _end)	// 네임스페이스 끝
+	while (index < _End)	// 네임스페이스 끝
 	{
 		// 지금 이문자를 보고있다
 		buffer = *(_buffer + index);
@@ -321,8 +330,8 @@ bool CParser::TryGetValue(const WCHAR *key, int &value) {
 //  5-3. value 에 iPart, dPart 더하기
 // 6. 값을 value에 넣고 성공했다고 true를 리턴하기
 // ===================================
-bool CParser::TryGetValue(const WCHAR *key, float &value) {
-	int index = this->_start;		// 네임스페이스 시작
+bool CParser::TryGetValue(const WCHAR* key, float& value) {
+	int index = this->_Start;		// 네임스페이스 시작
 
 	// key 찾기
 	if (TryGetKey(key, index) == false) {
@@ -339,7 +348,7 @@ bool CParser::TryGetValue(const WCHAR *key, float &value) {
 	float expo = 1;	// 지수수분 (1/10^N)
 
 	// 정수부 구하기
-	while (index < _end) {
+	while (index < _End) {
 		buffer = *(_buffer + index);
 		// 숫자 발견!
 		if (L'0' <= buffer && buffer <= L'9') {
@@ -358,7 +367,7 @@ bool CParser::TryGetValue(const WCHAR *key, float &value) {
 		num = 0;	// 숫자부분
 		expo = 1;	// 지수수분 (1/10^N)
 
-		while (index < _end) {
+		while (index < _End) {
 			buffer = *(_buffer + index);
 			// 숫자 발견!
 			if (L'0' <= buffer && buffer <= L'9') {
@@ -372,12 +381,12 @@ bool CParser::TryGetValue(const WCHAR *key, float &value) {
 			index++;
 		}
 		for (int i = tI; i < index; i++) {
-			expo *= (float) 0.1;
+			expo *= (float)0.1;
 		}
-		dPart = (float) num * expo;
+		dPart = (float)num * expo;
 	}
 
-	value = (float) iPart + dPart;
+	value = (float)iPart + dPart;
 
 	return true;
 }
@@ -396,8 +405,8 @@ bool CParser::TryGetValue(const WCHAR *key, float &value) {
 // * 주의 *
 // '\n', '\t' 등 WCHAR에 저장이 되는것을 모두 불러옴
 // ===================================
-bool CParser::TryGetValue(const WCHAR *key, WCHAR *value) {
-	int index = this->_start;		// 네임스페이스 시작
+bool CParser::TryGetValue(const WCHAR* key, WCHAR* value) {
+	int index = this->_Start;		// 네임스페이스 시작
 
 	// key 찾기
 	if (TryGetKey(key, index) == false) {
@@ -407,13 +416,13 @@ bool CParser::TryGetValue(const WCHAR *key, WCHAR *value) {
 
 	// value 파싱
 	WCHAR buffer = *(_buffer + index);
-	int _start;
+	int start;
 	int len;
 
 	// " 으로 시작하지 않으면 문자열이 아님
 	if (buffer == L'\"') {
-		_start = ++index;
-		while (index < _end) {
+		start = ++index;
+		while (index < _End) {
 			buffer = *(_buffer + index);
 			// 다음 " 만날때까지 쭉쭉 진행
 			if (buffer == L'\"') {
@@ -421,11 +430,12 @@ bool CParser::TryGetValue(const WCHAR *key, WCHAR *value) {
 			}
 			index++;
 		}
-	} else return false;
+	}
+	else return false;
 
-	len = index - _start; // 문자열 길이 = 끝 - 시작
+	len = index - start; // 문자열 길이 = 끝 - 시작
 
-	Strcpy(value, _buffer + _start, len);
+	Strcpy(value, _buffer + start, len);
 
 	return true;
 }

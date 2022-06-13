@@ -120,6 +120,12 @@ CParser::CParser(const WCHAR *FILEPATH) {
 			start = -1;
 		}
 	}
+	// 네임스페이스의 end값 넣기
+	auto nextiter = _namespaceList.begin();
+	++nextiter;
+	for (auto nowiter = _namespaceList.begin(); nextiter != _namespaceList.end(); ++nowiter, ++nextiter) {
+		(*nowiter).End = (*nextiter).Start;
+	}
 
 	// index 초기값
 	_iStart = 0;

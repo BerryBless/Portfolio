@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CList.h" />
     <ClInclude Include="CParser.h" />
   </ItemGroup>
   <ItemGroup>

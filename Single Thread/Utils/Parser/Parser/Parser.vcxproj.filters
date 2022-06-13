@@ -18,6 +18,9 @@
     <ClInclude Include="CParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CList.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CParser.cpp">
