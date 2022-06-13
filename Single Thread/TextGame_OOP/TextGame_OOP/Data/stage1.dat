@@ -12,7 +12,7 @@ sNextScene = "stage2"
 iPlayerHp=10
 iPlayerDamage = 1
 iPlayerAttackDelay = 5
-iPlayerMoveDelay = 1
+iPlayerMoveDelay = 3
 
 [MONSTER]
 iSpaghettiHp = 4

@@ -1,4 +1,7 @@
+#include "pch.h"
 #include "MemProfiler.h"
+#ifdef MEMPROFILER
+
 #include <iostream>
 #include <cstring>
 #include <ctime>
@@ -6,194 +9,141 @@
 
 #pragma region MemProfiler
 
-// ½Ì±ÛÅæ
-
-MemProfiler& MemProfiler::Instance() {
-	static MemProfiler instance;
-	return instance;
-}
+#pragma region Singleton
 
 MemProfiler::MemProfiler() {
-	// ½Ì±ÛÅæ »ý¼ºÀÚ
+	// ì‹±ê¸€í†¤ ìƒì„±ìž
 }
 MemProfiler::~MemProfiler() {
-	// ½Ì±ÛÅæ ¼Ò¸êÀÚ
-	this->_list.PrintInfo();
+	PrintInfo("~MemProfiler",0);
 }
-// ¾ó·Ï Á¤º¸ ³Ö±â!
+#pragma endregion
+// ì–¼ë¡ ì •ë³´ ë„£ê¸°!
 void MemProfiler::AllocInfo(void* aPtr, size_t size, const char* file, int line) {
-	MemAllocInfo info;	// MemAllocInfo ±¸Á¶Ã¼
-	// ±¸Á¶Ã¼¿¡ Á¤º¸ ³Ö±â
+	MemAllocInfo info;	// MemAllocInfo êµ¬ì¡°ì²´
+	// êµ¬ì¡°ì²´ì— ì •ë³´ ë„£ê¸°
 	info.AllocPtr = aPtr;
 	info.Size = size;
 	strcpy_s(info.File, strlen(file) + 1, file);
 	info.Line = line;
 	info.State = AllocState::Alloc;
-	// ±¸Á¶Ã¼¸¦ ¸®½ºÆ®¿¡ ´Þ±â
-	_list.Push_back(info);
+	// êµ¬ì¡°ì²´ë¥¼ ë¦¬ìŠ¤íŠ¸ì— ë‹¬ê¸°
+	_list.push_back(info);
 }
 
-#pragma region List
 
-
-MemProfiler::InfoList::InfoList() {
-	// ¸®½ºÆ® ÃÊ±âÈ­
-	_head = nullptr;
-	_count = 0;
-}
-void MemProfiler::InfoList::Push_back(MemAllocInfo info) {
-	// ¸®½ºÆ® ³¡¿¡ Ãß°¡ÇÏ±â
-	Node* newNode = new Node;	// »õ ³ëµå ÇÒ´ç
-	// »õ ³ëµå¿¡ Á¤º¸³Ö±â
-	newNode->Info = info;		
-	newNode->Tail = nullptr;
-	// Ã³À½ºÎÅÍ¸é
-	if (_head == nullptr) {
-		_head = newNode;
-	}
-	else {
-		// ²¿¸®¿¡ ´Þ±â
-		Node* cur = _head;
-		while (cur->Tail != nullptr) {
-			cur = cur->Tail;
-		}
-		cur->Tail = newNode;
-	}
-	_count++;
-}
-
-MemProfiler::AllocState MemProfiler::InfoList::TryDelete(void* ptr) {
-	if (_head == nullptr) { printf_s("\nMemProfiler::InfoList::TryDelete :: Head == nullptr\n"); return AllocState::ERROR; }
-	// ³¡±îÁö ¼øÈ¸ÇÏ¸ç
-	Node* itr = _head;
-	while (itr != nullptr) {
-		// ¿À·ù ³»¿ë¿¡ ¸Â°Ô Ã³¸®
-		if (itr->Info.AllocPtr == ptr) {
-			if (itr->Info.State == AllocState::Free) {
-				// ÀÌ¹Ì ÃÊ±âÈ­µÈ°É ´Ù½Ã ÃÊ½ÃÈ­ ½ÃµµÇÒ¶§ ¿¡·¯
-				// TODO deleteÇÑ ÆÄÀÏ°ú ¶óÀÎ °¡Á®¿À±â
-				itr->Info.State = AllocState::Freed;
-				return AllocState::Freed;
-			}
-			// Á¤»óÀûÀ¸·Î µé¾î¿È
-			itr->Info.State = AllocState::Free;
-			return AllocState::Free;
-		}
-		else if (itr->Info.AllocPtr == (int*)ptr - 1) {
-			// new[] ·Î È£ÃâÇÏ°í delete ·Î Áö¿ï¶§
-			itr->Info.State = AllocState::Array;
-			return AllocState::Array;
-		}
-		else if (itr->Info.AllocPtr == (int*)ptr + 1) {
-			// new ·Î È£ÃâÇÏ°í delete[] ·Î Áö¿ï¶§
-			itr->Info.State = AllocState::nArray;
-			return AllocState::nArray;
-		}
-		itr = itr->Tail;
-	}
-	// ¾ÖÃÊ¿¡ ÀÌ»óÇÑ°Å µé¾î¿È
-	return AllocState::ERROR;
-}
-// ¾ó·ÏÁ¤º¸ Ãâ·Â
-void MemProfiler::InfoList::PrintInfo() {
-	if (_head == nullptr) { printf_s("\MemProfiler::InfoList::PrintInfo :: Head == nullptr\n"); return; }
+// ì–¼ë¡ì •ë³´ ì¶œë ¥
+void MemProfiler::PrintInfo(const char *file, int line) {
+	if (_list.empty()) { return; }
 
 	FILE* fp = stdout;
-	//* ÆÄÀÏ ÀÔÃâ·Â
+	//* íŒŒì¼ ìž…ì¶œë ¥
 	// Alloc_YYYYMMDD_HHMMSS.log
-	char filename[26];	// ÀúÀåÇÒÆÄÀÏ ÀÌ¸§
+	char filename[30];	// ì €ìž¥í• íŒŒì¼ ì´ë¦„
 
-	// ½Ã°£±¸ÇÏ±â
+	// ì‹œê°„êµ¬í•˜ê¸°
 	time_t now = time(0);
 	struct tm tstruct;
 
 	localtime_s(&tstruct, &now);
-	strftime(filename, sizeof(filename), "Alloc_%Y%m%e_%H%M%S.log", &tstruct); // (Alloc_20210828_173840.log)
+	strftime(filename, sizeof(filename), "log/Alloc_%Y%m%e_%H%M%S.log", &tstruct); // (Alloc_20210828_173840.log)
 
-	// ÆÄÀÏÀÌ ÀÖÀ¸¸é µÚ¿¡ Ãß°¡
+	// íŒŒì¼ì´ ìžˆìœ¼ë©´ ë’¤ì— ì¶”ê°€
 	fopen_s(&fp, filename, "a");
-	if (fp == NULL) {
-		//CRASH
-		int *p = nullptr;
-		*p = 10;
-		return;
-	}
 	fseek(fp, 0, SEEK_END);
 	//*/
-	Node* itr = _head;
-	while (itr != nullptr) {
-		switch (itr->Info.State)
+	fprintf_s(fp, "=======================================================================================\n" );
+	fprintf_s(fp, "call) %s , %d\n", file , line);
+	fprintf_s(fp, "---------------------------------------------------------------------------------------\n" );
+	for (auto iter = _list.begin(); iter != _list.end(); ++iter) {
+		switch ((*iter).State)
 		{
-		case AllocState::Alloc:		// delete È£ÃâÇÏÁö ¾ÊÀ½!
-			fprintf_s(fp, "LEAK    [0x%p] [%6Iu] %s : %d\n", itr->Info.AllocPtr, itr->Info.Size, itr->Info.File, itr->Info.Line);
+		case AllocState::Alloc:		// delete í˜¸ì¶œí•˜ì§€ ì•ŠìŒ!
+			fprintf_s(fp, "LEAK    [0x%p] [%6Iu] %s : %d\n", (*iter).AllocPtr, (*iter).Size, (*iter).File, (*iter).Line);
 			break;
-		case AllocState::Free:		// Á¤»óÀÛµ¿!
-			fprintf_s(fp, "NOALLOC [0x%p]\n", itr->Info.AllocPtr);
+		case AllocState::Free:		// ì •ìƒìž‘ë™!
+			fprintf_s(fp, "NOALLOC [0x%p]\n", (*iter).AllocPtr);
 			break;
-		case AllocState::Freed:		// delete 2¹øÀÌ»ó È£Ãâ!
-			// TODO ¿¡·¯¸Þ½ÃÁö
-			fprintf_s(fp, "Freed   [0x%p] [%6Iu] %s : %d\n", itr->Info.AllocPtr, itr->Info.Size, itr->Info.File, itr->Info.Line);
+		case AllocState::Freed:		// delete 2ë²ˆì´ìƒ í˜¸ì¶œ!
+			// TODO ì—ëŸ¬ë©”ì‹œì§€
+			fprintf_s(fp, "Freed   [0x%p] [%6Iu] %s : %d\n", (*iter).AllocPtr, (*iter).Size, (*iter).File, (*iter).Line);
 			break;
-		case AllocState::Array:		// new[] ·Î È£ÃâÇÏ°í delete ·Î Áö¿ï¶§
-			fprintf_s(fp, "ARRAY   [0x%p] [%6Iu] %s : %d\n", itr->Info.AllocPtr, itr->Info.Size, itr->Info.File, itr->Info.Line);
+		case AllocState::Array:		// new[] ë¡œ í˜¸ì¶œí•˜ê³  delete ë¡œ ì§€ìš¸ë•Œ
+			fprintf_s(fp, "ARRAY   [0x%p] [%6Iu] %s : %d\n", (*iter).AllocPtr, (*iter).Size, (*iter).File, (*iter).Line);
 			break;
-		case AllocState::nArray:	// new ·Î È£ÃâÇÏ°í delete[] ·Î Áö¿ï¶§
-			fprintf_s(fp, "nArray  [0x%p] [%6Iu] %s : %d\n", itr->Info.AllocPtr, itr->Info.Size, itr->Info.File, itr->Info.Line);
+		case AllocState::nArray:	// new ë¡œ í˜¸ì¶œí•˜ê³  delete[] ë¡œ ì§€ìš¸ë•Œ
+			fprintf_s(fp, "nArray  [0x%p] [%6Iu] %s : %d\n", (*iter).AllocPtr, (*iter).Size, (*iter).File, (*iter).Line);
 			break;
 
 		default:
 			break;
 		}
-		itr = itr->Tail;
 	}
+	fprintf_s(fp, "=======================================================================================\n\n");
+
 	fclose(fp);
 }
-#pragma endregion
-// ¾ó·ÏÁ¤º¸ »©±â
-void MemProfiler::FreeInfo(void* aPtr) {
-	AllocState state = _list.TryDelete(aPtr);
-	if (state != AllocState::Free) {
-		// TODO  ¿À·ù¼öÁ¤
-		Instance()._list.PrintInfo();
+// ì–¼ë¡ì •ë³´ ë¹¼ê¸°
+void MemProfiler::FreeInfo(void *ptr) {
+	if (_list.empty() || ptr == NULL) { return; }
+	// ëê¹Œì§€ ìˆœíšŒí•˜ë©°
+	for (auto iter = _list.begin(); iter != _list.end(); ++iter) {
+		// ì˜¤ë¥˜ ë‚´ìš©ì— ë§žê²Œ ì²˜ë¦¬
+		if ((*iter).AllocPtr == ptr) {
+			if ((*iter).State == AllocState::Free) {
+				// ì´ë¯¸ ì´ˆê¸°í™”ëœê±¸ ë‹¤ì‹œ ì´ˆì‹œí™” ì‹œë„í• ë•Œ ì—ëŸ¬
+				// TODO deleteí•œ íŒŒì¼ê³¼ ë¼ì¸ ê°€ì ¸ì˜¤ê¸°
+				(*iter).State = AllocState::Freed;
+			}
+			// ì •ìƒì ìœ¼ë¡œ ë“¤ì–´ì˜´
+			(*iter).State = AllocState::Free;
+		} else if ((*iter).AllocPtr == (int *) ptr - 1) {
+			// new[] ë¡œ í˜¸ì¶œí•˜ê³  delete ë¡œ ì§€ìš¸ë•Œ
+			(*iter).State = AllocState::Array;
+		} else if ((*iter).AllocPtr == (int *) ptr + 1) {
+			// new ë¡œ í˜¸ì¶œí•˜ê³  delete[] ë¡œ ì§€ìš¸ë•Œ
+			(*iter).State = AllocState::nArray;
+		}
 	}
 }
-
 
 #pragma endregion
 
 
 #pragma region new overloading
 
-// µ¿ÀûÇÒ´ç
+// ë™ì í• ë‹¹
 
-// const ¾ÈºÙÀÌ¸é ¿¡·¯ (2019)
+// const ì•ˆë¶™ì´ë©´ ì—ëŸ¬ (2019)
 void* operator new (size_t size, const char* file, int line) {
 	void* p = malloc(size);
 
-	MemProfiler::Instance().AllocInfo(p, size, file, line);
+	I_MEMPROFILER->AllocInfo(p, size, file, line);
 	return p;
 }
 
 void operator delete (void* p, const char* file, int line) {}
 void operator delete (void* p) {
-	MemProfiler::Instance().FreeInfo(p);
+	I_MEMPROFILER->FreeInfo(p);
 	free(p);
 }
 
 
-// ¹è¿­·Î ÇÒ´ç
+// ë°°ì—´ë¡œ í• ë‹¹
 void* operator new[](size_t size, const char* file, int line) {
 	void* p = malloc(size);
-	MemProfiler::Instance().AllocInfo(p, size, file, line);
+	I_MEMPROFILER->AllocInfo(p, size, file, line);
 	return p;
 }
 
 void operator delete[](void* p, const char* file, int line) {}
 void operator delete[](void* p) {
-	MemProfiler::Instance().FreeInfo(p);
+	I_MEMPROFILER->FreeInfo(p);
 	free(p);
 }
 
 
 
 #pragma endregion
+
+#endif // MEMPROFILER

@@ -116,7 +116,7 @@ bool CFramework::Collison(int iX, int iY, IObject *obj) {
 	// 범위체크
 	if (iY < 0 || dfSCREEN_HEIGHT <= iY)
 		return false;
-	if (iX < 0 || dfSCREEN_WIDTH-1 <= iX)
+	if (iX < 0 || dfSCREEN_WIDTH <= iX)
 		return false;
 
 	IObject *pTarget = Find(iX, iY);
@@ -141,7 +141,7 @@ bool CFramework::TryMove(int iX, int iY, IObject *mobj) {
 	// 범위체크
 	if (iY < 0 || dfSCREEN_HEIGHT <= iY)
 		return false;
-	if (iX < 0 || dfSCREEN_WIDTH-1 <= iX)
+	if (iX < 0 || dfSCREEN_WIDTH <= iX)
 		return false;
 
 	// 충돌체크
@@ -169,7 +169,7 @@ IObject *CFramework::Find(int iX, int iY) {
 	// 범위체크
 	if (iY < 0 || dfSCREEN_HEIGHT <= iY)
 		return NULL;
-	if (iX < 0 || dfSCREEN_WIDTH-1 <= iX)
+	if (iX < 0 || dfSCREEN_WIDTH <= iX)
 		return NULL;
 	// 이좌표에 있는 오브젝트 반환
 	return _objectTile[iY][iX];

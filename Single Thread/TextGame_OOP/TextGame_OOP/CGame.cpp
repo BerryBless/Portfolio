@@ -138,7 +138,7 @@ void CGame::Render() {
 
 // 이 씬이 파괴될때 _mapData, _scenefile 메모리할당 해지
 void CGame::Destroy() {
-	delete[] _mapData;
+	delete _mapData;
 	delete _scenefile;
 }
 
