@@ -21,6 +21,17 @@ public:
 
 int main() {
 	CTest* test = new CTest[3];
-	delete test;
+	CTest* test1 = new CTest;
+	CTest* test2 = new CTest;
+	CTest* test3 = new CTest;
+	CTest* test4 = new CTest[3];
+	CTest* test5 = new CTest;
+	CTest* test6 = new CTest[3];
+	CTest* test7 = new CTest;
+	delete[] test2;
+	delete test3;
+	delete[] test4;
+	delete test5;
+	delete[] test6;
 	return 0;
 }

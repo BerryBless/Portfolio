@@ -8,21 +8,21 @@
 // Strcpy : 문자열 복사
 // Strcmp : 문자열 비교 (같으면 return 0)
 // ================================
-int Strlen(const WCHAR *str) {
+int Strlen(const WCHAR* str) {
 	int len = 0;
 	while (*(str + len) != '\0') {
 		len++;
 	}
 	return len;
 }
-void Strcpy(WCHAR *strDest, const WCHAR *strSrc) {
+void Strcpy(WCHAR* strDest, const WCHAR* strSrc) {
 	int len = 0;
 	while (*(strSrc + len) != '\0') {
 		*(strDest + len) = *(strSrc + len);
 		len++;
 	}
 }
-int Strcmp(const WCHAR *str1, const WCHAR *str2) {
+int Strcmp(const WCHAR* str1, const WCHAR* str2) {
 	int len = Strlen(str1);
 	for (int i = 0; i < len; i++) {
 		if (*(str1 + i) != *(str2 + i))
@@ -48,7 +48,7 @@ PROFILE_SAMPLE g_profileSample[dfPROFILECOUNT];
 // 2. 현재 시간을 g_profileSample[name]에 기록합니다.
 // ================================
 
-void ProfileBegin(const WCHAR *name) {
+void ProfileBegin(const WCHAR* name) {
 	// 프로 파일 시작
 	int index = -1;
 	// 기록 하던것이 있나 확인
@@ -88,7 +88,7 @@ void ProfileBegin(const WCHAR *name) {
 // 3. 계산한 정보를 저장합니다.
 // ================================
 
-void ProfileEnd(const WCHAR *name) {
+void ProfileEnd(const WCHAR* name) {
 	// 프로파일 시작
 	int index = -1;
 	for (int i = 0; i < dfPROFILECOUNT; i++) {
@@ -124,52 +124,9 @@ void ProfileEnd(const WCHAR *name) {
 // 2. 출력시점의 평균을 구합니다
 // 3. g_profileSample의 모든 정보를 출력합니다.
 // ================================
-void ProfileDataOutText(char *fileName) {
+void ProfileDataOutText(WCHAR* fileName) {
 	// 출력하기
-	FILE *fp = stdout;
-	fopen_s(&fp, fileName, "a");
-	if (fp == NULL) {
-		fopen_s(&fp, fileName, "w");
-		if (fp == NULL) {
-			// 읽지도 생성도 못했으면 결함!
-			CRASH();
-		}
-	} else {
-		fseek(fp, 0, SEEK_END);
-	}
-
-	// 주파수 얻기
-	LARGE_INTEGER freq;
-	QueryPerformanceFrequency(&freq);
-
-	// 출력 부분
-	wprintf_s(L"PRINT LOG : %s\n", fileName);
-	fprintf_s(fp, "PROFILER:\n\
-----------------------------------------------------------------------------------------------------\n\
-            Name  |           Average  |               Min  |               Max  |             Call \n\
-----------------------------------------------------------------------------------------------------\n");
-	for (int i = 0; i < g_profileCount; i++) {
-		// 평균 구하기 필요없는 최대 최소값은 뻄
-		__int64 total = g_profileSample[i].TotalTime;
-		total -= g_profileSample[i].Max;
-		total -= g_profileSample[i].Min;
-		DOUBLE avg = (DOUBLE) total / (DOUBLE) (g_profileSample[i].Call - 2) / (DOUBLE) freq.QuadPart * TICK_TO_MICSEC;
-
-		// 출력
-		fprintf_s(fp, "%17ls |%17.4llf\xC2\xB5s |%17.4llf\xC2\xB5s |%17.4llf\xC2\xB5s |%17lld\n",
-			g_profileSample[i].Name,												// 이름
-			avg,																// 평균
-			g_profileSample[i].Min / (DOUBLE) freq.QuadPart * TICK_TO_MICSEC,		// 최소
-			g_profileSample[i].Max / (DOUBLE) freq.QuadPart * TICK_TO_MICSEC,		// 최대
-			g_profileSample[i].Call);											// 호출 횟수
-	}
-	fprintf_s(fp, "----------------------------------------------------------------------------------------------------\n");
-
-	fclose(fp);
-}
-void WProfileDataOutText(WCHAR *fileName) {
-	// 출력하기
-	FILE *fp = stdout;
+	FILE* fp = stdout;
 	_wfopen_s(&fp, fileName, L"a");
 	if (fp == NULL) {
 		_wfopen_s(&fp, fileName, L"w");
@@ -177,7 +134,8 @@ void WProfileDataOutText(WCHAR *fileName) {
 			// 읽지도 생성도 못했으면 결함!
 			CRASH();
 		}
-	} else {
+	}
+	else {
 		fseek(fp, 0, SEEK_END);
 	}
 
@@ -196,20 +154,21 @@ void WProfileDataOutText(WCHAR *fileName) {
 		__int64 total = g_profileSample[i].TotalTime;
 		total -= g_profileSample[i].Max;
 		total -= g_profileSample[i].Min;
-		DOUBLE avg = (DOUBLE) total / (DOUBLE) (g_profileSample[i].Call - 2) / (DOUBLE) freq.QuadPart * TICK_TO_MICSEC;
+		DOUBLE avg = (DOUBLE)total / (DOUBLE)(g_profileSample[i].Call - 2) / (DOUBLE)freq.QuadPart * TICK_TO_MICSEC;
 
 		// 출력
 		fprintf_s(fp, "%17ls |%17.4llf\xC2\xB5s |%17.4llf\xC2\xB5s |%17.4llf\xC2\xB5s |%17lld\n",
 			g_profileSample[i].Name,												// 이름
 			avg,																// 평균
-			g_profileSample[i].Min / (DOUBLE) freq.QuadPart * TICK_TO_MICSEC,		// 최소
-			g_profileSample[i].Max / (DOUBLE) freq.QuadPart * TICK_TO_MICSEC,		// 최대
+			g_profileSample[i].Min / (DOUBLE)freq.QuadPart * TICK_TO_MICSEC,		// 최소
+			g_profileSample[i].Max / (DOUBLE)freq.QuadPart * TICK_TO_MICSEC,		// 최대
 			g_profileSample[i].Call);											// 호출 횟수
 	}
 	fprintf_s(fp, "----------------------------------------------------------------------------------------------------\n");
 
 	fclose(fp);
 }
+
 
 // ================================
 // ProfileReset()
@@ -233,7 +192,7 @@ void ProfileReset(void) {
 // cProfiler
 // 생성, 소멸자를 이용해 실수로 end를 호출하지 못해도 end를 처리합니다.
 // ================================
-cProfiler::cProfiler(const WCHAR *tagName) {
+cProfiler::cProfiler(const WCHAR* tagName) {
 	tag = tagName;
 	ProfileBegin(tag);
 }

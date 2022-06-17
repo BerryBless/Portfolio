@@ -3,12 +3,17 @@
 
 //*
 void f1() {
-	PRO_START(L"F1");
+	PRO_BEGIN(L"F1");
 	Sleep(1);
+	PRO_END(L"F1");
 }
 void f2() {
-	PRO_START(L"F2");
-	Sleep(80);
+	PRO_BEGIN(L"F2");
+	int sum = 0;
+	for (int i = 1; i <= 100000; i++) {
+		sum += i;
+	}
+	PRO_END(L"F2");
 }
 void f3() {
 	PRO_BEGIN(L"F3");
@@ -23,7 +28,7 @@ int main() {
 		f3();
 		if (_kbhit()) {
 			char key = _getch();
-			PRO_PRINT((char*)"log.log");
+			PRO_PRINT((WCHAR*)L"log.log");
 		}
 	}
 
