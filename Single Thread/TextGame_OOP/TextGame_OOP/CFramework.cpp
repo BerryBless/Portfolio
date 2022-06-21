@@ -82,7 +82,7 @@ bool CFramework::InGame() {
 IObject *CFramework::Instantiate(IObject *obj) {
 	// _objects, _objectTile 에 등록하기
 	// 충돌체크
-	if (Collison(obj->_pos, obj) == true) {
+	if (Collision(obj->_pos, obj) == true) {
 		// 생성시 충돌이 일어나서 OnCollision, Destroy 호출 하고 바로 소멸 
 		obj->Destroy();
 		delete obj;	// TODO delete 모아서 하기?
@@ -111,8 +111,8 @@ void CFramework::Destroy(IObject *obj) {
 
 // 움직일 오브젝트 obj 와 목적지에 있는 오브젝트 pTarget의 충돌체크
 // 충돌이 가능한 상황이면 
-// obj->OnCollison(pTarget) 호출
-bool CFramework::Collison(int iX, int iY, IObject *obj) {
+// obj->OnCollision(pTarget) 호출
+bool CFramework::Collision(int iX, int iY, IObject *obj) {
 	// 범위체크
 	if (iY < 0 || dfSCREEN_HEIGHT <= iY)
 		return false;
@@ -123,17 +123,17 @@ bool CFramework::Collison(int iX, int iY, IObject *obj) {
 	// 오브젝트가 있나?
 	if (pTarget != NULL) {
 		// 그 오브젝트가 충돌을 체크하느냐?
-		if (pTarget->_collison) {
+		if (pTarget->_collision) {
 			// 가는데 충돌할 오브젝트가 있음 충돌!
-			obj->OnCollison(pTarget);
+			obj->OnCollision(pTarget);
 			return true;
 		}
 	}
 	return false;
 }
 
-bool CFramework::Collison(Position pos, IObject *obj) {
-	return Collison(pos.X,pos.Y, obj);
+bool CFramework::Collision(Position pos, IObject *obj) {
+	return Collision(pos.X,pos.Y, obj);
 }
 
 // 오브젝트 이동 시도
@@ -145,7 +145,7 @@ bool CFramework::TryMove(int iX, int iY, IObject *mobj) {
 		return false;
 
 	// 충돌체크
-	if (Collison(iX, iY, mobj) == true) {
+	if (Collision(iX, iY, mobj) == true) {
 		// 충돌이 일어남
 		return false;
 	}

@@ -16,7 +16,7 @@
 // ----
 // CProjectile(x,y, attack, speed, dir) : (x,y) 좌표에 attack의 공격력, speed의 프레임마다 dir방향으로 이동하는 투사체 발싸
 // Render()					: _dir 방향에 따른 스프라이트 출력
-// OnCollison(target)		: target이 크리쳐일경우 target->Hit(attack) 호출
+// OnCollision(target)		: target이 크리쳐일경우 target->Hit(attack) 호출
 // Destroy					: 2번삭제 안되게 _activate = false
 // ============================================================================
 
@@ -30,8 +30,8 @@ public:
 
 public:
 	CProjectile(int iX, int iY,int attack, int speed, Direction dir);	// 발싸!
-	virtual void Update();// 매 프레임 마다 _dir 방향으로 한칸
-	virtual void OnCollison(IObject *pTarget); // target이 크리쳐일경우 target->Hit(attack) 호출
+	virtual void Update();// 매 speed 마다 _dir 방향으로 한칸
+	virtual void OnCollision(IObject *pTarget); // target이 크리쳐일경우 target->Hit(attack) 호출
 	virtual void Render();// _dir 방향에 따른 스프라이트 출력
 	virtual void Destroy(); // _activate = false
 };

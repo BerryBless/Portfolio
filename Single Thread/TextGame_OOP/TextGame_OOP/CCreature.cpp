@@ -9,7 +9,7 @@ CCreature::CCreature(int iX, int iY, int hp, int attack) {
 	_hp = hp;
 	_attack = attack;
 	_dir = Direction::None;
-	_collison = true;
+	_collision = true;
 	_activate = true;
 }
 

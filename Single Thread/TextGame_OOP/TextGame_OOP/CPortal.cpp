@@ -6,7 +6,7 @@
 CPortal::CPortal(int iX, int iY, const WCHAR* nextscene) {
 	_pos.X = iX;
 	_pos.Y = iY;
-	_collison = true;
+	_collision = true;
 	_activate = true;
 	_type = ObjectType::Portal;
 	Strcpy(_nextscene, nextscene);	// 이 포탈을 타면 이동할 씬이름

@@ -8,14 +8,13 @@ CSFX::CSFX(int iX, int iY, int showframe) {
 	_pos.Y = iY;
 	_showframe = showframe;
 	_type = ObjectType::SFX;
-	_collison = false;	// 이펙트는 충돌을 무시하겠다
+	_collision = false;	// 이펙트는 충돌을 무시하겠다
 	_activate = true;
 	_renderTick = 0;
 }
 
 // _renderTick이 _showframe을 넘었으면 이펙트 파괴
 void CSFX::Update() {
-	_activate = false;	// 중복파괴 방지
 	if (_renderTick >= _showframe)
 		DESTROY(this);
 }

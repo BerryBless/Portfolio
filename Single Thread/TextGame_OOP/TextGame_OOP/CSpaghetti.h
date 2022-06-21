@@ -18,7 +18,7 @@
 // Update()	:	1. SrcToDestDir(_pos, pPlayer->_pos)를 호출하여 플레이어가 직선상에있을떄 공격속도에 맞추어 투사체 생성
 //				2. _movespeed <= now - _moveTick 마다 랜덤방향으로 1칸이동
 // Render() : _pos좌표에 'S' 출력
-// OnCollison(pTarget) : pTarget의 타입이 플레이어라면 공격력만큼 피해를 줌
+// OnCollision(pTarget) : pTarget의 타입이 플레이어라면 공격력만큼 피해를 줌
 // ============================================================================
 
 class CSpaghetti :public CMonster{
@@ -32,6 +32,6 @@ public:
 	CSpaghetti(int iX, int iY, int hp, int attack,int atspeed, int mospeed);
 	virtual void Update(); // 정해진 시간마다 이동, 공격
 	virtual void Render(); // _pos좌표에 'S' 출력
-	virtual void OnCollison(IObject *pTarget); // 플레이어와 부딧치면 데미지를 입힘
+	virtual void OnCollision(IObject *pTarget); // 플레이어와 부딧치면 데미지를 입힘
 };
 

@@ -12,7 +12,7 @@ void CTitleScene::Update() {
 void CTitleScene::Render() {
 	CScreenBuffer *scrInst = I_SCREENBUFFER;
 	scrInst->Sprite_Draw(0, 0, "Title Scene", 11);
-	scrInst->Sprite_Draw(0, 1, "Move   : Arrow keys", 17);
+	scrInst->Sprite_Draw(0, 1, "Move   : Arrow keys", 19);
 	scrInst->Sprite_Draw(0, 2, "Attack : W, A, S, D", 19);
 	scrInst->Sprite_Draw(0, 3, "P -> @", 6);
 	scrInst->Sprite_Draw(0, 4, ">> Press Enter <<", 17);

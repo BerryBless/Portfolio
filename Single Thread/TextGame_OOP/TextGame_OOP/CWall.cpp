@@ -4,7 +4,7 @@
 CWall::CWall(int iX, int iY) {
 	_pos.X = iX;
 	_pos.Y = iY;
-	_collison = true;
+	_collision = true;
 	_activate = true;
 	_type = ObjectType::Wall;
 }

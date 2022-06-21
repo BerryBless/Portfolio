@@ -12,7 +12,7 @@ CProjectile::CProjectile(int iX, int iY, int attack,int speed, Direction dir) {
 	_type = ObjectType::Projectile;
 	_speed = speed;
 	_tick = 0;
-	_collison = true;
+	_collision = true;
 	_activate = true;
 }
 
@@ -27,7 +27,7 @@ void CProjectile::Update() {
 }
 
 // target이 크리쳐일경우 target->Hit(attack) 호출
-void CProjectile::OnCollison(IObject *pTarget) {
+void CProjectile::OnCollision(IObject *pTarget) {
 	// 크리쳐에만 유요한 충돌이다!
 	CCreature *pCreature = dynamic_cast<CCreature *> (pTarget);
 	if (pCreature != NULL) {

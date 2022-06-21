@@ -14,7 +14,7 @@ void CPlayer::Render() {
 }
 
 // 충돌한게 포탈이면 다음스테이지로
-void CPlayer::OnCollison(IObject *pTarget) {
+void CPlayer::OnCollision(IObject *pTarget) {
 	// 포탈인지 확인
 	if (pTarget->_type == ObjectType::Portal) {
 		// 포탈이면 그포탈에 지정된 씬 로딩

@@ -56,7 +56,7 @@ void CSpaghetti::Render() {
 	SPRITE_DRAW(_pos.X, _pos.Y, 'S');
 }
 // 플레이어와 부딧치면 데미지를 입힘
-void CSpaghetti::OnCollison(IObject *pTarget) {
+void CSpaghetti::OnCollision(IObject *pTarget) {
 	if (pTarget->_type == ObjectType::Player) {
 		((CPlayer *) pTarget)->Hit(_attack);
 	}

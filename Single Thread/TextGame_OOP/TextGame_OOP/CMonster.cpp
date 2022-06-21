@@ -14,7 +14,7 @@ void CMonster::Render() {
 // 파괴시 _pos에 이펙트 생성
 void CMonster::Destroy() {
 	_activate = false; // 2번삭제 방지
-	INSTANTIATE(new CSFX(_pos.X, _pos.Y, 50));
+	INSTANTIATE(new CSFX(_pos.X, _pos.Y, 10));
 }
 
 // src->dest를 바라보는 방향, 직선상에 있지않다면 None
