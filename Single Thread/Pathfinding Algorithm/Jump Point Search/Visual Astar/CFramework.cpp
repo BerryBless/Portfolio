@@ -184,7 +184,7 @@ void CFramework::Running() {
 					_correction.Correction(_path, _corPath); // 경로보정
 				}
 			}
-			Sleep(500);
+			Sleep(10);
 		}
 	} else {
 		// 자동검증!

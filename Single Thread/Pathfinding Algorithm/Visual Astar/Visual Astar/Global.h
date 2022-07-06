@@ -4,7 +4,7 @@
 #include "CMemory.h"
 #include "CList.h"
 
-#define dfRectLen 16					// 한변의 길이
+#define dfRectLen 32					// 한변의 길이
 #define dfMAPWIDTH 1400 / dfRectLen		// 화면 크기에 따른 너비 최대노드 개수
 #define dfMAPHEIGHT 700 / dfRectLen 	// 화면 크기에 따른 높이 최대노드 개수
 

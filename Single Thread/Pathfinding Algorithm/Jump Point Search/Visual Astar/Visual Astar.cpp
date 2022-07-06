@@ -6,6 +6,10 @@
 #include "DrawMap.h"
 #include <windowsx.h>
 #include "CFramework.h"
+#include <locale.h>
+
+
+
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 HWND g_hWnd;
@@ -17,6 +21,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow) {
+
+	_wsetlocale(LC_ALL, L"korean");     
+
 
 	WNDCLASSEXW wcex;
 

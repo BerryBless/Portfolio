@@ -96,7 +96,7 @@ enum class ObjectType {
 	Wall = 0,
 	Portal,
 	//--------------------
-	// creatuer
+	// creature
 	Player = 10,
 	Monster,
 	//--------------------

@@ -176,9 +176,8 @@ void CDisplayMap::DrawUI() {
 	rect.top = 0;
 	rect.right = 500;
 	rect.bottom = 500;
-	const WCHAR infoString[] = L"벽생성 : 드래그\n시작지점 변경 : 왼쪽 더블클릭\n끝지점 변경 : 오른쪽 더블클릭\nJSP실행 : 휠버튼 클릭\n 맵생성 : M\n지우기 : 스페이스바";
 	SelectObject(_hMemDC, _hInfoPen);		// 정보 팬
-	DrawTextW(_hMemDC, infoString, -1, &rect, DT_CENTER);
+	DrawTextW(_hMemDC, TEXT("벽생성 : 드래그\n시작지점 변경 : 왼쪽 더블클릭\n끝지점 변경 : 오른쪽 더블클릭\nJSP실행 : 휠버튼 클릭\n 맵생성 : M\n지우기 : 스페이스바"), -1, &rect, DT_CENTER);
 }
 
 
